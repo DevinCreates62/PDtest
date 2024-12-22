@@ -1,0 +1,167 @@
+<html><head><base href="/" /><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simple Police Report</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #f0f0f0;
+}
+
+.report-form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #444;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+textarea {
+    height: 100px;
+}
+
+button {
+    background: #2c5399;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.success-message {
+    display: none;
+    color: green;
+    text-align: center;
+    margin-top: 10px;
+}
+</style>
+</head>
+<body>
+    <div class="report-form">
+        <h1>Police Report</h1>
+        <form id="policeReport">
+            <div class="form-group">
+                <label>Incident Type</label>
+                <select id="incidentType" required>
+                    <option value="theft">Theft</option>
+                    <option value="assault">Assault</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="incidentDate" required>
+            </div>
+
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="location" required placeholder="Where did it happen?">
+            </div>
+
+            <div class="form-group">
+                <label>Your Name</label>
+                <input type="text" id="reporterName" required placeholder="Your name">
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="description" required placeholder="What happened?"></textarea>
+            </div>
+
+            <button type="submit">Submit Report</button>
+        </form>
+        <div id="successMessage" class="success-message">Report sent!</div>
+    </div>
+
+<script>
+document.getElementById('policeReport').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = {
+        incident_type: document.getElementById('incidentType').value,
+        incident_date: document.getElementById('incidentDate').value,
+        location: document.getElementById('location').value,
+        reporter_name: document.getElementById('reporterName').value,
+        description: document.getElementById('description').value
+    };
+
+    const discordMessage = {
+        content: "📋 New Police Report",
+        embeds: [{
+            title: "Report Details",
+            color: 3447003,
+            fields: [
+                {
+                    name: "Type",
+                    value: formData.incident_type
+                },
+                {
+                    name: "Date",
+                    value: formData.incident_date
+                },
+                {
+                    name: "Location",
+                    value: formData.location
+                },
+                {
+                    name: "Reporter",
+                    value: formData.reporter_name
+                },
+                {
+                    name: "Description",
+                    value: formData.description
+                }
+            ]
+        }]
+    };
+
+    fetch('https://discord.com/api/webhooks/1320278832535830588/r-eDzNrQZxjfjnIPqdjaMSjK2N7e6xJ3g0UGhne2wK0x1uFwcml72JMtBkezJDTpgW1L', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(discordMessage)
+    })
+    .then(response => {
+        if (response.ok) {
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('policeReport').reset();
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 3000);
+        }
+    })
+    .catch(error => {
+        alert('Error sending report. Please try again.');
+    });
+});
+</script>
+</body></html>
